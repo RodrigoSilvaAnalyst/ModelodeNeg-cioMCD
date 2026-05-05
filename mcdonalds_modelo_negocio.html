@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>McDonald's (MCD) — Modelo de Negócio & Segmentos | Análise Fundamental</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --mcd-red:#DA291C;
+    --mcd-yellow:#FFC72C;
+    --mcd-dark:#0E0E12;
+    --mcd-panel:#16161D;
+    --mcd-panel-2:#1E1E27;
+    --mcd-border:#2A2A36;
+    --mcd-text:#EAEAF0;
+    --mcd-muted:#9A9AA8;
+    --mcd-green:#27C28A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+    background:radial-gradient(ellipse at top,#1A1A24 0%,var(--mcd-dark) 60%);
+    color:var(--mcd-text);
+    line-height:1.55;
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+
+  /* Animated background dots */
+  body::before{
+    content:'';
+    position:fixed;inset:0;
+    background-image:
+      radial-gradient(circle at 20% 20%,rgba(255,199,44,0.08),transparent 40%),
+      radial-gradient(circle at 80% 70%,rgba(218,41,28,0.08),transparent 40%);
+    pointer-events:none;
+    z-index:0;
+    animation:bgDrift 18s ease-in-out infinite alternate;
+  }
+  @keyframes bgDrift{
+    0%{transform:translate(0,0) scale(1)}
+    100%{transform:translate(-3%,2%) scale(1.05)}
+  }
+
+  .container{max-width:1240px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+  /* HERO */
+  .hero{
+    min-height:88vh;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    text-align:center;padding:80px 24px 60px;position:relative;
+  }
+  .arches{
+    width:140px;height:140px;
+    margin-bottom:20px;
+    filter:drop-shadow(0 0 30px rgba(255,199,44,0.5));
+    animation:float 4s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{transform:translateY(0) rotate(0deg)}
+    50%{transform:translateY(-12px) rotate(-2deg)}
+  }
+  .hero h1{
+    font-size:clamp(2rem,5vw,4.2rem);
+    font-weight:900;
+    letter-spacing:-0.02em;
+    background:linear-gradient(135deg,var(--mcd-yellow) 0%,#FFE490 50%,var(--mcd-red) 100%);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+    margin-bottom:16px;
+    opacity:0;transform:translateY(20px);
+    animation:fadeUp 0.9s ease-out 0.2s forwards;
+  }
+  .hero .ticker{
+    display:inline-flex;gap:14px;align-items:center;
+    background:rgba(255,199,44,0.1);border:1px solid rgba(255,199,44,0.3);
+    padding:8px 20px;border-radius:999px;
+    font-weight:600;color:var(--mcd-yellow);
+    margin-bottom:24px;
+    opacity:0;transform:translateY(20px);
+    animation:fadeUp 0.9s ease-out 0.4s forwards;
+  }
+  .hero .subtitle{
+    color:var(--mcd-muted);max-width:720px;font-size:1.1rem;
+    opacity:0;transform:translateY(20px);
+    animation:fadeUp 0.9s ease-out 0.6s forwards;
+  }
+  @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+  .hero-badge{
+    display:inline-block;padding:4px 12px;border-radius:6px;
+    background:var(--mcd-red);color:white;font-size:0.75rem;font-weight:700;
+    letter-spacing:0.1em;text-transform:uppercase;margin-bottom:18px;
+    opacity:0;animation:fadeUp 0.9s ease-out forwards;
+  }
+
+  .scroll-indicator{
+    position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+    color:var(--mcd-muted);font-size:0.85rem;
+    animation:bounce 2s infinite;
+  }
+  @keyframes bounce{
+    0%,100%{transform:translate(-50%,0)}
+    50%{transform:translate(-50%,8px)}
+  }
+
+  /* SECTIONS */
+  section{padding:80px 0;position:relative}
+  .section-tag{
+    display:inline-block;padding:6px 14px;border-radius:999px;
+    background:rgba(218,41,28,0.15);color:var(--mcd-red);
+    font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  .section-title{
+    font-size:clamp(1.8rem,3.4vw,2.6rem);
+    font-weight:800;letter-spacing:-0.02em;margin-bottom:14px;
+  }
+  .section-title .accent{color:var(--mcd-yellow)}
+  .section-sub{color:var(--mcd-muted);max-width:780px;margin-bottom:48px;font-size:1.05rem}
+
+  /* KPI GRID */
+  .kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px;
+  }
+  .kpi-card{
+    background:linear-gradient(135deg,var(--mcd-panel) 0%,var(--mcd-panel-2) 100%);
+    border:1px solid var(--mcd-border);
+    padding:24px;border-radius:16px;
+    position:relative;overflow:hidden;
+    transition:transform 0.3s ease,border-color 0.3s ease;
+  }
+  .kpi-card:hover{transform:translateY(-4px);border-color:var(--mcd-yellow)}
+  .kpi-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--mcd-yellow),var(--mcd-red));
+    transform:scaleX(0);transform-origin:left;
+    transition:transform 0.5s ease;
+  }
+  .kpi-card:hover::before{transform:scaleX(1)}
+  .kpi-label{font-size:0.78rem;color:var(--mcd-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px}
+  .kpi-value{font-size:2rem;font-weight:800;color:var(--mcd-yellow);margin-bottom:6px;line-height:1.1}
+  .kpi-value .unit{font-size:1rem;color:var(--mcd-muted);font-weight:500;margin-left:4px}
+  .kpi-delta{font-size:0.85rem;color:var(--mcd-green);font-weight:600}
+  .kpi-delta.neg{color:#FF6B6B}
+
+  /* REVENUE STREAMS */
+  .revenue-layout{
+    display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;
+  }
+  @media(max-width:900px){.revenue-layout{grid-template-columns:1fr}}
+  .chart-wrap{
+    background:var(--mcd-panel);border:1px solid var(--mcd-border);
+    padding:28px;border-radius:18px;position:relative;
+    display:flex;flex-direction:column;
+  }
+  .chart-canvas-box{
+    position:relative;height:300px;width:100%;
+  }
+  .stream-list{display:flex;flex-direction:column;gap:14px}
+  .stream-item{
+    display:flex;align-items:flex-start;gap:14px;
+    padding:16px;border-radius:12px;
+    background:var(--mcd-panel);border:1px solid var(--mcd-border);
+    transition:all 0.3s ease;
+    opacity:0;transform:translateX(-20px);
+  }
+  .stream-item.visible{opacity:1;transform:translateX(0)}
+  .stream-item:hover{border-color:var(--mcd-yellow);background:var(--mcd-panel-2)}
+  .stream-dot{
+    width:14px;height:14px;border-radius:4px;flex-shrink:0;margin-top:5px;
+    box-shadow:0 0 10px currentColor;
+  }
+  .stream-content h4{font-size:1.05rem;margin-bottom:4px;font-weight:700}
+  .stream-content .stream-amount{color:var(--mcd-yellow);font-weight:700;font-size:1.2rem}
+  .stream-content p{color:var(--mcd-muted);font-size:0.92rem;margin-top:6px}
+
+  /* FRANCHISE / REAL ESTATE */
+  .pillar-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;
+  }
+  .pillar{
+    background:var(--mcd-panel);border:1px solid var(--mcd-border);
+    border-radius:18px;padding:28px;position:relative;overflow:hidden;
+    transition:all 0.4s ease;
+  }
+  .pillar:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(255,199,44,0.1)}
+  .pillar-icon{
+    width:56px;height:56px;border-radius:14px;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,var(--mcd-yellow),#FFA800);
+    color:var(--mcd-dark);font-size:1.6rem;font-weight:900;
+    margin-bottom:16px;
+  }
+  .pillar h3{font-size:1.25rem;margin-bottom:10px}
+  .pillar p{color:var(--mcd-muted);font-size:0.95rem;margin-bottom:14px}
+  .pillar ul{list-style:none;padding:0}
+  .pillar li{padding:8px 0;border-bottom:1px dashed var(--mcd-border);font-size:0.9rem}
+  .pillar li:last-child{border-bottom:none}
+  .pillar li strong{color:var(--mcd-yellow)}
+
+  /* SEGMENTS */
+  .segments-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px;
+  }
+  .segment-card{
+    background:linear-gradient(135deg,var(--mcd-panel) 0%,var(--mcd-panel-2) 100%);
+    border:1px solid var(--mcd-border);
+    border-radius:18px;padding:28px;position:relative;overflow:hidden;
+    transition:all 0.4s ease;
+  }
+  .segment-card::after{
+    content:'';position:absolute;top:0;right:0;width:120px;height:120px;
+    background:var(--seg-color,var(--mcd-yellow));
+    opacity:0.08;border-radius:50%;
+    transform:translate(40%,-40%);
+    transition:transform 0.5s ease;
+  }
+  .segment-card:hover::after{transform:translate(20%,-30%) scale(1.4)}
+  .segment-flag{font-size:2.4rem;margin-bottom:12px;display:block}
+  .segment-card h3{font-size:1.3rem;margin-bottom:6px;font-weight:800}
+  .segment-card .seg-tag{font-size:0.78rem;color:var(--mcd-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:18px;display:block}
+  .seg-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+  .seg-stat{padding:12px;background:rgba(0,0,0,0.25);border-radius:10px}
+  .seg-stat .label{font-size:0.7rem;color:var(--mcd-muted);text-transform:uppercase;letter-spacing:0.08em}
+  .seg-stat .val{font-size:1.4rem;font-weight:800;color:var(--seg-color,var(--mcd-yellow));margin-top:4px}
+  .seg-bar{height:6px;background:rgba(255,255,255,0.06);border-radius:6px;margin-top:18px;overflow:hidden}
+  .seg-bar-fill{height:100%;background:var(--seg-color,var(--mcd-yellow));border-radius:6px;width:0;transition:width 1.5s cubic-bezier(0.4,0,0.2,1)}
+  .seg-countries{margin-top:16px;font-size:0.85rem;color:var(--mcd-muted);line-height:1.7}
+
+  /* STRATEGY 4D */
+  .strategy-banner{
+    background:linear-gradient(135deg,rgba(218,41,28,0.15),rgba(255,199,44,0.1));
+    border:1px solid rgba(255,199,44,0.3);
+    border-radius:20px;padding:36px;margin-bottom:30px;text-align:center;
+  }
+  .strategy-banner h3{
+    font-size:clamp(1.4rem,2.6vw,2rem);margin-bottom:8px;
+    background:linear-gradient(135deg,var(--mcd-yellow),var(--mcd-red));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+
+  .four-d{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;
+  }
+  .d-card{
+    background:var(--mcd-panel);border:2px solid var(--mcd-border);
+    border-radius:16px;padding:24px;text-align:center;
+    transition:all 0.4s ease;cursor:default;
+    position:relative;overflow:hidden;
+  }
+  .d-card:hover{
+    transform:translateY(-8px) rotate(-1deg);
+    border-color:var(--mcd-yellow);
+    box-shadow:0 20px 40px rgba(255,199,44,0.2);
+  }
+  .d-letter{
+    font-size:3.5rem;font-weight:900;line-height:1;
+    background:linear-gradient(135deg,var(--mcd-yellow),var(--mcd-red));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    margin-bottom:6px;
+  }
+  .d-card h4{font-size:1rem;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+  .d-card p{color:var(--mcd-muted);font-size:0.85rem}
+
+  /* TARGETS */
+  .targets-row{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;
+  }
+  .target-card{
+    background:var(--mcd-panel);border:1px solid var(--mcd-border);
+    border-radius:16px;padding:24px;text-align:center;position:relative;
+  }
+  .target-card .from-to{
+    display:flex;align-items:center;justify-content:center;gap:14px;margin:14px 0;
+    font-weight:800;
+  }
+  .target-card .from{color:var(--mcd-muted);font-size:1.1rem}
+  .target-card .arrow{color:var(--mcd-yellow);font-size:1.4rem}
+  .target-card .to{color:var(--mcd-yellow);font-size:1.6rem}
+  .target-card .label{font-size:0.85rem;color:var(--mcd-muted)}
+  .target-card .target-title{font-weight:700;margin-bottom:4px}
+  .target-card .target-year{font-size:0.78rem;color:var(--mcd-red);font-weight:700;letter-spacing:0.1em}
+
+  /* MOAT / VANTAGENS */
+  .moat-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;
+  }
+  .moat-card{
+    background:var(--mcd-panel);border:1px solid var(--mcd-border);
+    border-left:4px solid var(--mcd-red);
+    border-radius:12px;padding:20px;
+    transition:all 0.3s ease;
+  }
+  .moat-card:hover{border-left-color:var(--mcd-yellow);background:var(--mcd-panel-2)}
+  .moat-card h4{font-size:1rem;margin-bottom:8px;color:var(--mcd-yellow)}
+  .moat-card p{font-size:0.9rem;color:var(--mcd-muted)}
+
+  /* CHART INTERNAL */
+  .map-chart-wrap{
+    background:var(--mcd-panel);border:1px solid var(--mcd-border);
+    padding:28px;border-radius:18px;height:380px;
+  }
+
+  /* ANALYST BADGE */
+  .analyst-badge{
+    position:fixed;top:18px;right:18px;
+    display:flex;align-items:center;gap:10px;
+    background:rgba(20,20,28,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border:1px solid var(--mcd-border);
+    padding:7px 14px 7px 7px;border-radius:999px;
+    text-decoration:none;color:var(--mcd-text);
+    z-index:1000;
+    transition:all 0.3s ease;
+    box-shadow:0 4px 20px rgba(0,0,0,0.4);
+  }
+  .analyst-badge:hover{
+    border-color:var(--mcd-yellow);
+    transform:translateY(-2px);
+    box-shadow:0 8px 28px rgba(255,199,44,0.25);
+  }
+  .analyst-avatar{
+    width:34px;height:34px;border-radius:50%;
+    background:linear-gradient(135deg,var(--mcd-yellow),var(--mcd-red));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;color:#0E0E12;font-size:0.82rem;letter-spacing:-0.02em;
+  }
+  .analyst-info{font-size:0.78rem;line-height:1.25}
+  .analyst-label{color:var(--mcd-muted);font-size:0.62rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
+  .analyst-name{color:var(--mcd-text);font-weight:700;font-size:0.85rem}
+  .linkedin-icon{width:16px;height:16px;color:var(--mcd-yellow);margin-left:2px;flex-shrink:0}
+  @media(max-width:600px){
+    .analyst-badge{top:12px;right:12px;padding:6px 10px 6px 6px}
+    .analyst-info{display:none}
+  }
+
+  /* FOOTER */
+  footer{
+    margin-top:60px;padding:40px 0;
+    border-top:1px solid var(--mcd-border);text-align:center;
+    color:var(--mcd-muted);font-size:0.85rem;
+  }
+  footer a{color:var(--mcd-yellow);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+
+  /* Reveal animation */
+  .reveal{opacity:0;transform:translateY(30px);transition:opacity 0.8s ease,transform 0.8s ease}
+  .reveal.visible{opacity:1;transform:translateY(0)}
+
+  /* Number counter pulse */
+  @keyframes pulse{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.04)}
+  }
+  .pulse{animation:pulse 2.5s ease-in-out infinite}
+
+  /* Two-column stats inside chart wrap */
+  .chart-stats{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px;
+  }
+  .chart-stats div{text-align:center;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px}
+  .chart-stats .v{font-size:1.1rem;font-weight:800;color:var(--mcd-yellow)}
+  .chart-stats .l{font-size:0.7rem;color:var(--mcd-muted);text-transform:uppercase;letter-spacing:0.05em}
+
+  /* Visual flow diagram */
+  .flow-diagram{
+    background:var(--mcd-panel);border:1px solid var(--mcd-border);
+    border-radius:18px;padding:30px;margin-top:30px;
+  }
+  .flow-diagram h3{margin-bottom:24px;text-align:center;color:var(--mcd-yellow)}
+  .flow-grid{
+    display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:14px;align-items:center;
+  }
+  @media(max-width:800px){.flow-grid{grid-template-columns:1fr}}
+  .flow-box{
+    background:var(--mcd-panel-2);border:1px solid var(--mcd-border);
+    padding:16px;border-radius:12px;text-align:center;font-size:0.9rem;
+  }
+  .flow-box.highlight{
+    background:linear-gradient(135deg,rgba(218,41,28,0.2),rgba(255,199,44,0.15));
+    border-color:var(--mcd-yellow);
+  }
+  .flow-box strong{display:block;color:var(--mcd-yellow);margin-bottom:4px;font-size:1.05rem}
+  .flow-arrow{
+    color:var(--mcd-yellow);font-size:1.6rem;text-align:center;
+  }
+  @media(max-width:800px){.flow-arrow{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+
+<!-- ANALYST BADGE -->
+<a class="analyst-badge" href="https://www.linkedin.com/in/rodrigo-silva-92a402334/" target="_blank" rel="noopener">
+  <div class="analyst-avatar">RS</div>
+  <div class="analyst-info">
+    <div class="analyst-label">Analista</div>
+    <div class="analyst-name">Rodrigo Silva</div>
+  </div>
+  <svg class="linkedin-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68 1.69 1.69 0 0 0-1.68-1.69 1.69 1.69 0 0 0-1.69 1.69 1.68 1.68 0 0 0 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+</a>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="hero-badge pulse">Análise Fundamental · NYSE: MCD</span>
+  <svg class="arches" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10,150 L10,55 C10,25 32,8 55,8 C75,8 92,20 100,40 C108,20 125,8 145,8 C168,8 190,25 190,55 L190,150 L155,150 L155,60 C155,48 148,40 138,40 C128,40 121,48 121,60 L121,150 L79,150 L79,60 C79,48 72,40 62,40 C52,40 45,48 45,60 L45,150 Z" fill="#FFC72C"/>
+  </svg>
+  <h1>Modelo de Negócio<br>McDonald's Corporation</h1>
+  <span class="ticker">
+    <span style="width:8px;height:8px;border-radius:50%;background:var(--mcd-green);box-shadow:0 0 8px var(--mcd-green)"></span>
+    FY 2025 · Receitas $26.9B · Net Income $8.56B · ~45.000 lojas em 100+ países
+  </span>
+  <p class="subtitle">Visão estruturada do modelo operacional, segmentos geográficos, fontes de receita e estratégia "Accelerating the Arches 2.0" para suportar a tua análise fundamental.</p>
+  <div class="scroll-indicator">↓ Scroll</div>
+</section>
+
+<!-- VISÃO GERAL -->
+<section>
+  <div class="container">
+    <span class="section-tag">01 · Visão Geral</span>
+    <h2 class="section-title">Os números que definem o <span class="accent">Golden Arches</span></h2>
+    <p class="section-sub">Indicadores-chave do exercício de 2025 que ilustram a escala operacional, a geração de cash-flow e a rentabilidade característica de um modelo altamente franchised.</p>
+
+    <div class="kpi-grid">
+      <div class="kpi-card reveal">
+        <div class="kpi-label">Receitas Totais</div>
+        <div class="kpi-value" data-counter="26.9" data-decimals="1">0<span class="unit">B USD</span></div>
+        <div class="kpi-delta">▲ +4% YoY</div>
+      </div>
+      <div class="kpi-card reveal">
+        <div class="kpi-label">Systemwide Sales</div>
+        <div class="kpi-value" data-counter="139.4" data-decimals="1">0<span class="unit">B USD</span></div>
+        <div class="kpi-delta">▲ +7% YoY</div>
+      </div>
+      <div class="kpi-card reveal">
+        <div class="kpi-label">Operating Income</div>
+        <div class="kpi-value" data-counter="12.4" data-decimals="1">0<span class="unit">B USD</span></div>
+        <div class="kpi-delta">▲ +6% YoY</div>
+      </div>
+      <div class="kpi-card reveal">
+        <div class="kpi-label">Net Income</div>
+        <div class="kpi-value" data-counter="8.56" data-decimals="2">0<span class="unit">B USD</span></div>
+        <div class="kpi-delta">▲ +4% YoY</div>
+      </div>
+      <div class="kpi-card reveal">
+        <div class="kpi-label">Operating Margin</div>
+        <div class="kpi-value" data-counter="46.1" data-decimals="1">0<span class="unit">%</span></div>
+        <div class="kpi-delta">Mid-to-high 40% target</div>
+      </div>
+      <div class="kpi-card reveal">
+        <div class="kpi-label">Diluted EPS</div>
+        <div class="kpi-value" data-counter="11.95" data-decimals="2">0<span class="unit">USD</span></div>
+        <div class="kpi-delta">▲ +5% YoY</div>
+      </div>
+      <div class="kpi-card reveal">
+        <div class="kpi-label">Restaurantes Globais</div>
+        <div class="kpi-value" data-counter="45356" data-decimals="0">0</div>
+        <div class="kpi-delta">~95% franchised</div>
+      </div>
+      <div class="kpi-card reveal">
+        <div class="kpi-label">Loyalty Members (90d)</div>
+        <div class="kpi-value" data-counter="210" data-decimals="0">0<span class="unit">M</span></div>
+        <div class="kpi-delta">▲ +19% YoY · $37B sales</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODELO DE RECEITA -->
+<section>
+  <div class="container">
+    <span class="section-tag">02 · Modelo de Receita</span>
+    <h2 class="section-title">Três fontes, <span class="accent">uma máquina</span> de cash-flow</h2>
+    <p class="section-sub">A McDonald's gera receita a partir de lojas próprias, royalties + rendas de franquias e, mais recentemente, fees tecnológicos. O modelo "heavily franchised" maximiza margens e reduz capex.</p>
+
+    <div class="revenue-layout">
+      <div class="chart-wrap reveal">
+        <div class="chart-canvas-box"><canvas id="revenueChart"></canvas></div>
+        <div class="chart-stats">
+          <div><div class="v">61.5%</div><div class="l">Franchised</div></div>
+          <div><div class="v">36.0%</div><div class="l">Company-Op</div></div>
+          <div><div class="v">2.4%</div><div class="l">Other</div></div>
+        </div>
+      </div>
+
+      <div class="stream-list">
+        <div class="stream-item reveal">
+          <div class="stream-dot" style="background:#FFC72C;color:#FFC72C"></div>
+          <div class="stream-content">
+            <h4>Receitas de Franquias</h4>
+            <div class="stream-amount">$16.55B <span style="color:var(--mcd-green);font-size:0.85rem">+5% YoY</span></div>
+            <p>Royalties (~5% das vendas) + rendas imobiliárias (triple-net lease) cobradas aos ~95% das lojas franchised. Margens altíssimas (~82%).</p>
+          </div>
+        </div>
+        <div class="stream-item reveal">
+          <div class="stream-dot" style="background:#DA291C;color:#DA291C"></div>
+          <div class="stream-content">
+            <h4>Vendas em Lojas Próprias</h4>
+            <div class="stream-amount">$9.69B <span style="color:#FF6B6B;font-size:0.85rem">−1% YoY</span></div>
+            <p>~5% das lojas operadas diretamente. Receitas brutas elevadas mas margens baixas (~16%) — usadas como laboratório operacional.</p>
+          </div>
+        </div>
+        <div class="stream-item reveal">
+          <div class="stream-dot" style="background:#27C28A;color:#27C28A"></div>
+          <div class="stream-content">
+            <h4>Other Revenues</h4>
+            <div class="stream-amount">$0.65B <span style="color:var(--mcd-green);font-size:0.85rem">+53% YoY</span></div>
+            <p>Tecnologia/cloud cobradas a franqueados, programas de loyalty e iniciativas digitais. Crescimento acelerado pela estratégia digital.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLOW DIAGRAM -->
+    <div class="flow-diagram reveal">
+      <h3>Como flui o dinheiro no modelo McDonald's</h3>
+      <div class="flow-grid">
+        <div class="flow-box">
+          <strong>Cliente final</strong>
+          ~$139B em vendas systemwide
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">
+          <strong>Franqueado</strong>
+          Operação local · paga royalties, rendas e fees tech
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box highlight">
+          <strong>McDonald's Corp.</strong>
+          $16.5B receita franchise · ~46% margem operacional
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FRANCHISE / REAL ESTATE -->
+<section>
+  <div class="container">
+    <span class="section-tag">03 · Modelo Operacional</span>
+    <h2 class="section-title">Franchise + <span class="accent">Imobiliário</span> = Moat</h2>
+    <p class="section-sub">A McDonald's é, na prática, uma das maiores empresas imobiliárias do mundo. ~60% do operating income vem de rendas. Esta é a razão pela qual o cash-flow é tão estável.</p>
+
+    <div class="pillar-grid">
+      <div class="pillar reveal">
+        <div class="pillar-icon">🍔</div>
+        <h3>Modelo de Franquia</h3>
+        <p>~95% das lojas são operadas por franqueados convencionais, licenciados de desenvolvimento ou afiliados.</p>
+        <ul>
+          <li><strong>Royalties:</strong> ~5% das vendas brutas</li>
+          <li><strong>Initial fee:</strong> $45.000 (típico US)</li>
+          <li><strong>Contratos:</strong> 20 anos típicos</li>
+          <li><strong>Margem MCD:</strong> ~82% sobre receita franchise</li>
+        </ul>
+      </div>
+
+      <div class="pillar reveal">
+        <div class="pillar-icon">🏢</div>
+        <h3>Império Imobiliário</h3>
+        <p>"We are not in the burger business. We are in the real estate business." — Harry Sonneborn, CFO histórico.</p>
+        <ul>
+          <li><strong>Ativos imobiliários:</strong> &gt;$40B</li>
+          <li><strong>Yield médio anual:</strong> ~6.8%</li>
+          <li><strong>Terrenos detidos:</strong> 28.000+ globalmente</li>
+          <li><strong>% Op. Income do imobiliário:</strong> ~60%</li>
+        </ul>
+      </div>
+
+      <div class="pillar reveal">
+        <div class="pillar-icon">📜</div>
+        <h3>Triple Net Lease</h3>
+        <p>O franqueado paga manutenção, seguros e impostos sobre o imóvel — McDonald's recebe renda "limpa".</p>
+        <ul>
+          <li><strong>Risco do landlord:</strong> Mínimo</li>
+          <li><strong>Renda fixa + % das vendas:</strong> Sim</li>
+          <li><strong>Renovações:</strong> Múltiplas opções</li>
+          <li><strong>Inflation hedge:</strong> Reajustes contratuais</li>
+        </ul>
+      </div>
+
+      <div class="pillar reveal">
+        <div class="pillar-icon">🍟</div>
+        <h3>Lojas Próprias</h3>
+        <p>~5% das lojas operadas diretamente — usadas como laboratório, formação e benchmark de excelência.</p>
+        <ul>
+          <li><strong>Receita anual:</strong> $9.69B</li>
+          <li><strong>Margem operacional:</strong> ~16%</li>
+          <li><strong>Função estratégica:</strong> R&D operacional</li>
+          <li><strong>Capex intensivo:</strong> Sim</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEGMENTOS GEOGRÁFICOS -->
+<section>
+  <div class="container">
+    <span class="section-tag">04 · Segmentos Geográficos</span>
+    <h2 class="section-title">Três segmentos reportáveis, <span class="accent">um sistema global</span></h2>
+    <p class="section-sub">Desde 2023 a McDonald's reporta os resultados em três segmentos: U.S., International Operated Markets (IOM) e International Developmental Licensed Markets &amp; Corporate (IDL).</p>
+
+    <div class="map-chart-wrap reveal" style="margin-bottom:30px">
+      <canvas id="segmentChart"></canvas>
+    </div>
+
+    <div class="segments-grid">
+      <div class="segment-card reveal" style="--seg-color:#3B82F6">
+        <span class="segment-flag">🇺🇸</span>
+        <h3>United States</h3>
+        <span class="seg-tag">Mercado doméstico · ~13.500 lojas</span>
+        <div class="seg-stats">
+          <div class="seg-stat"><div class="label">Receita 2025</div><div class="val">$10.83B</div></div>
+          <div class="seg-stat"><div class="label">Comp. Sales</div><div class="val">+2.1%</div></div>
+        </div>
+        <div class="seg-bar"><div class="seg-bar-fill" data-width="40.3"></div></div>
+        <div class="seg-countries"><strong>40.3%</strong> da receita total · maior contribuição EBIT · loyalty &gt;25M ativos</div>
+      </div>
+
+      <div class="segment-card reveal" style="--seg-color:#FFC72C">
+        <span class="segment-flag">🌍</span>
+        <h3>International Operated Markets</h3>
+        <span class="seg-tag">IOM · 8 mercados-âncora</span>
+        <div class="seg-stats">
+          <div class="seg-stat"><div class="label">Receita 2025</div><div class="val">$13.63B</div></div>
+          <div class="seg-stat"><div class="label">Comp. Sales</div><div class="val">+3.2%</div></div>
+        </div>
+        <div class="seg-bar"><div class="seg-bar-fill" data-width="50.7"></div></div>
+        <div class="seg-countries"><strong>50.7%</strong> · Austrália, Canadá, França, Alemanha, Itália, Polónia, Espanha, Reino Unido</div>
+      </div>
+
+      <div class="segment-card reveal" style="--seg-color:#DA291C">
+        <span class="segment-flag">🌐</span>
+        <h3>Internat. Developmental Licensed</h3>
+        <span class="seg-tag">IDL & Corporate · 75+ países</span>
+        <div class="seg-stats">
+          <div class="seg-stat"><div class="label">Receita 2025</div><div class="val">$2.43B</div></div>
+          <div class="seg-stat"><div class="label">Comp. Sales</div><div class="val">+4.6%</div></div>
+        </div>
+        <div class="seg-bar"><div class="seg-bar-fill" data-width="9.0"></div></div>
+        <div class="seg-countries"><strong>9.0%</strong> · China, Japão, Brasil, Médio Oriente — operados por licenciados (capital-light)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ESTRATÉGIA -->
+<section>
+  <div class="container">
+    <span class="section-tag">05 · Estratégia</span>
+    <h2 class="section-title">Accelerating the Arches <span class="accent">2.0</span></h2>
+    <p class="section-sub">A estratégia de crescimento assenta em três pilares culturais (M·C·D) e quatro alavancas operacionais (os 4 D's). Originalmente lançada com 3 D's, foi atualizada com a adição do "Development".</p>
+
+    <div class="strategy-banner reveal">
+      <h3>M · C · D</h3>
+      <p style="color:var(--mcd-text);font-size:1.05rem;margin-top:8px">
+        <strong>Maximize Marketing</strong> · <strong>Commit to the Core</strong> · <strong>Double Down on the 3 D's</strong>
+      </p>
+    </div>
+
+    <div class="four-d">
+      <div class="d-card reveal">
+        <div class="d-letter">D</div>
+        <h4>Digital</h4>
+        <p>+1/3 das vendas systemwide nos top 6 mercados via mobile, kiosks, loyalty.</p>
+      </div>
+      <div class="d-card reveal">
+        <div class="d-letter">D</div>
+        <h4>Delivery</h4>
+        <p>Parcerias com Uber Eats, DoorDash, plus McDelivery próprio — alavanca de crescimento.</p>
+      </div>
+      <div class="d-card reveal">
+        <div class="d-letter">D</div>
+        <h4>Drive-Thru</h4>
+        <p>Vantagem estrutural pós-pandemia · ~70% das vendas US passam pelo drive-thru.</p>
+      </div>
+      <div class="d-card reveal" style="border-color:var(--mcd-yellow);background:linear-gradient(135deg,rgba(255,199,44,0.1),var(--mcd-panel))">
+        <div class="d-letter">D</div>
+        <h4>Development</h4>
+        <p>4º D adicionado em 2023 — abertura acelerada de novas lojas até 50.000 em 2027.</p>
+      </div>
+    </div>
+
+    <h3 style="margin:50px 0 20px;font-size:1.5rem;color:var(--mcd-yellow)">Targets até 2027</h3>
+    <div class="targets-row">
+      <div class="target-card reveal">
+        <div class="target-year">META 2027</div>
+        <div class="target-title">Restaurantes Globais</div>
+        <div class="from-to"><span class="from">45K</span><span class="arrow">→</span><span class="to">50K</span></div>
+        <div class="label">Crescimento mais rápido da história</div>
+      </div>
+      <div class="target-card reveal">
+        <div class="target-year">META 2027</div>
+        <div class="target-title">Loyalty Members ativos</div>
+        <div class="from-to"><span class="from">210M</span><span class="arrow">→</span><span class="to">250M</span></div>
+        <div class="label">Em ~70 mercados</div>
+      </div>
+      <div class="target-card reveal">
+        <div class="target-year">META 2027</div>
+        <div class="target-title">Vendas via Loyalty</div>
+        <div class="from-to"><span class="from">$37B</span><span class="arrow">→</span><span class="to">$45B</span></div>
+        <div class="label">Sales drivers digitais</div>
+      </div>
+      <div class="target-card reveal">
+        <div class="target-year">2026 Outlook</div>
+        <div class="target-title">Capex 2026</div>
+        <div class="from-to"><span class="to" style="font-size:1.4rem">$3.7-3.9B</span></div>
+        <div class="label">Foco em new builds</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MOAT / VANTAGENS COMPETITIVAS -->
+<section>
+  <div class="container">
+    <span class="section-tag">06 · Vantagens Competitivas</span>
+    <h2 class="section-title">Porquê o <span class="accent">moat</span> é tão durável</h2>
+    <p class="section-sub">Pontos relevantes para a tua tese de investimento em MCD.</p>
+
+    <div class="moat-grid">
+      <div class="moat-card reveal">
+        <h4>🌟 Brand Equity</h4>
+        <p>Marca top-10 global, reconhecimento &gt;95% nos mercados core. Pricing power demonstrado.</p>
+      </div>
+      <div class="moat-card reveal">
+        <h4>📍 Densidade de Localizações</h4>
+        <p>45.356 lojas em 100+ países — barreira de entrada física quase impossível de replicar.</p>
+      </div>
+      <div class="moat-card reveal">
+        <h4>🏠 Real Estate Asset Base</h4>
+        <p>$40B+ em ativos imobiliários · 28.000+ terrenos · gera ~60% do operating income.</p>
+      </div>
+      <div class="moat-card reveal">
+        <h4>💰 Capital-Light Growth</h4>
+        <p>Modelo franchised reduz capex por nova loja · franqueados financiam expansão internacional.</p>
+      </div>
+      <div class="moat-card reveal">
+        <h4>📱 Digital Flywheel</h4>
+        <p>210M+ ativos no loyalty · dados &amp; targeting personalizado fortalecem retenção e ticket médio.</p>
+      </div>
+      <div class="moat-card reveal">
+        <h4>🔁 Cash-Flow Recorrente</h4>
+        <p>Royalties + rendas geram fluxos previsíveis e contracíclicos — modelo testado em recessões.</p>
+      </div>
+      <div class="moat-card reveal">
+        <h4>🍔 Supply Chain</h4>
+        <p>Acordos de longo prazo com fornecedores globais (Coca-Cola, Tyson, JBS) reduzem custos unitários.</p>
+      </div>
+      <div class="moat-card reveal">
+        <h4>📊 Dividend Aristocrat</h4>
+        <p>Aumentos consecutivos do dividendo desde 1976 · capital return policy disciplinada.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>Dados FY 2025 · McDonald's Corporation (NYSE: MCD)</p>
+    <p style="margin-top:8px">Fontes: <a href="https://corporate.mcdonalds.com/corpmcd/our-stories/article/Q4-full-year-2025-results.html" target="_blank">MCD Q4/FY 2025 Release</a> · <a href="https://www.sec.gov/Archives/edgar/data/63908/000006390826000035/mcd-20251231.htm" target="_blank">10-K SEC</a> · <a href="https://corporate.mcdonalds.com/corpmcd/our-company/who-we-are/accelerating-the-arches.html" target="_blank">Accelerating the Arches</a></p>
+    <p style="margin-top:14px;color:#666">Documento de apoio à análise fundamental — não constitui recomendação de investimento.</p>
+  </div>
+</footer>
+
+<script>
+  // ===== Reveal on scroll =====
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        // Trigger counter
+        const counterEl = e.target.querySelector('[data-counter]');
+        if(counterEl && !counterEl.dataset.done){
+          animateCounter(counterEl);
+          counterEl.dataset.done = 'true';
+        }
+        // Trigger seg-bar fill
+        const bar = e.target.querySelector('.seg-bar-fill');
+        if(bar && bar.dataset.width){
+          setTimeout(() => bar.style.width = bar.dataset.width + '%', 200);
+        }
+      }
+    });
+  },{threshold:0.15});
+
+  document.querySelectorAll('.reveal,.kpi-card,.stream-item,.pillar,.segment-card,.d-card,.target-card,.moat-card').forEach(el => {
+    el.classList.add('reveal');
+    observer.observe(el);
+  });
+
+  // ===== Animated counters =====
+  function animateCounter(el){
+    const target = parseFloat(el.dataset.counter);
+    const decimals = parseInt(el.dataset.decimals || '0');
+    const unit = el.querySelector('.unit')?.outerHTML || '';
+    const duration = 1600;
+    const start = performance.now();
+    const fmt = (n) => {
+      if(decimals===0) return Math.round(n).toLocaleString('pt-PT');
+      return n.toFixed(decimals);
+    };
+    function tick(now){
+      const elapsed = now - start;
+      const progress = Math.min(elapsed/duration, 1);
+      const eased = 1 - Math.pow(1-progress, 3);
+      const value = target * eased;
+      el.innerHTML = fmt(value) + unit;
+      if(progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ===== Charts =====
+  Chart.defaults.color = '#9A9AA8';
+  Chart.defaults.font.family = "'Inter','Segoe UI',sans-serif";
+
+  // Revenue donut
+  const revCtx = document.getElementById('revenueChart');
+  new Chart(revCtx, {
+    type:'doughnut',
+    data:{
+      labels:['Franquias (royalties + rendas)','Lojas próprias','Other (tech / loyalty)'],
+      datasets:[{
+        data:[16548,9690,647],
+        backgroundColor:['#FFC72C','#DA291C','#27C28A'],
+        borderColor:'#16161D',
+        borderWidth:3,
+        hoverOffset:14
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      cutout:'62%',
+      plugins:{
+        legend:{
+          position:'bottom',
+          labels:{padding:14,usePointStyle:true,pointStyle:'circle',font:{size:12}}
+        },
+        tooltip:{
+          callbacks:{
+            label:(ctx) => ctx.label + ': $' + (ctx.parsed/1000).toFixed(2) + 'B'
+          }
+        }
+      },
+      animation:{
+        animateRotate:true,
+        duration:1600
+      }
+    }
+  });
+
+  // Segment chart - horizontal bar
+  const segCtx = document.getElementById('segmentChart');
+  new Chart(segCtx, {
+    type:'bar',
+    data:{
+      labels:['United States','Internat. Operated Markets','Internat. Developmental Lic.'],
+      datasets:[
+        {
+          label:'Receita 2025 ($B)',
+          data:[10.83,13.63,2.43],
+          backgroundColor:['#3B82F6','#FFC72C','#DA291C'],
+          borderRadius:8,
+          barThickness:32
+        },
+        {
+          label:'Receita 2024 ($B)',
+          data:[10.63,12.63,2.66],
+          backgroundColor:['rgba(59,130,246,0.3)','rgba(255,199,44,0.3)','rgba(218,41,28,0.3)'],
+          borderRadius:8,
+          barThickness:32
+        }
+      ]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom',labels:{padding:14,usePointStyle:true,pointStyle:'circle'}},
+        tooltip:{
+          callbacks:{
+            label:(ctx) => ctx.dataset.label + ': $' + ctx.parsed.x.toFixed(2) + 'B'
+          }
+        },
+        title:{
+          display:true,
+          text:'Receita por Segmento Geográfico — 2025 vs 2024 ($B USD)',
+          color:'#EAEAF0',
+          font:{size:14,weight:'600'},
+          padding:{bottom:18}
+        }
+      },
+      scales:{
+        x:{
+          grid:{color:'rgba(255,255,255,0.06)'},
+          ticks:{callback:(v) => '$' + v + 'B'}
+        },
+        y:{grid:{display:false}}
+      },
+      animation:{
+        duration:1500,
+        easing:'easeOutQuart'
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
