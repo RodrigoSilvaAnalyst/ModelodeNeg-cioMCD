@@ -307,14 +307,16 @@
   }
 
   /* ANALYST BADGE */
+  .analyst-badges{
+    position:fixed;top:18px;right:18px;z-index:1000;
+    display:flex;align-items:center;gap:10px;
+  }
   .analyst-badge{
-    position:fixed;top:18px;right:18px;
     display:flex;align-items:center;gap:10px;
     background:rgba(20,20,28,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
     border:1px solid var(--mcd-border);
     padding:7px 14px 7px 7px;border-radius:999px;
     text-decoration:none;color:var(--mcd-text);
-    z-index:1000;
     transition:all 0.3s ease;
     box-shadow:0 4px 20px rgba(0,0,0,0.4);
   }
@@ -334,7 +336,8 @@
   .analyst-name{color:var(--mcd-text);font-weight:700;font-size:0.85rem}
   .linkedin-icon{width:16px;height:16px;color:var(--mcd-yellow);margin-left:2px;flex-shrink:0}
   @media(max-width:600px){
-    .analyst-badge{top:12px;right:12px;padding:6px 10px 6px 6px}
+    .analyst-badges{top:12px;right:12px;gap:8px}
+    .analyst-badge{padding:6px 10px 6px 6px}
     .analyst-info{display:none}
   }
 
@@ -394,14 +397,24 @@
 <body>
 
 <!-- ANALYST BADGE -->
-<a class="analyst-badge" href="https://www.linkedin.com/in/rodrigo-silva-92a402334/" target="_blank" rel="noopener">
-  <div class="analyst-avatar">RS</div>
-  <div class="analyst-info">
-    <div class="analyst-label">Analista</div>
-    <div class="analyst-name">Rodrigo Silva</div>
-  </div>
-  <svg class="linkedin-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68 1.69 1.69 0 0 0-1.68-1.69 1.69 1.69 0 0 0-1.69 1.69 1.68 1.68 0 0 0 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
-</a>
+<div class="analyst-badges">
+  <a class="analyst-badge" href="https://www.linkedin.com/in/rodrigo-silva-92a402334/" target="_blank" rel="noopener">
+    <div class="analyst-avatar">RS</div>
+    <div class="analyst-info">
+      <div class="analyst-label">Analista</div>
+      <div class="analyst-name">Rodrigo Silva</div>
+    </div>
+    <svg class="linkedin-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68 1.69 1.69 0 0 0-1.68-1.69 1.69 1.69 0 0 0-1.69 1.69 1.68 1.68 0 0 0 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+  </a>
+  <a class="analyst-badge" href="https://www.linkedin.com/company/asclub/?viewAsMember=true" target="_blank" rel="noopener">
+    <div class="analyst-avatar">AS</div>
+    <div class="analyst-info">
+      <div class="analyst-label">Comunidade</div>
+      <div class="analyst-name">ASCLUB</div>
+    </div>
+    <svg class="linkedin-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68 1.69 1.69 0 0 0-1.68-1.69 1.69 1.69 0 0 0-1.69 1.69 1.68 1.68 0 0 0 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+  </a>
+</div>
 
 <!-- HERO -->
 <section class="hero">
